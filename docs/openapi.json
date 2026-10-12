@@ -1,0 +1,321 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/reception-records": {
+      "get": {
+        "operationId": "ReceptionController_list",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "reviewing",
+                "draft"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Danh sách hồ sơ và mẫu trong môi trường phát triển.",
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      },
+      "post": {
+        "operationId": "ReceptionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Lưu PDF gốc và tạo hồ sơ trống, không chạy OCR.",
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    },
+    "/api/reception-records/demo": {
+      "post": {
+        "operationId": "ReceptionController_demo",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "Tạo một hồ sơ giả lập, chỉ khi bật ENABLE_DEMO_FIXTURES.",
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    },
+    "/api/reception-records/{id}": {
+      "get": {
+        "operationId": "ReceptionController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    },
+    "/api/reception-records/{id}/draft": {
+      "patch": {
+        "operationId": "ReceptionController_save",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveDraftDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Lưu bản nháp trong transaction; version cũ trả 409.",
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    },
+    "/api/reception-records/{id}/history": {
+      "get": {
+        "operationId": "ReceptionController_history",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    },
+    "/api/reception-records/{id}/pdf": {
+      "get": {
+        "operationId": "ReceptionController_pdf",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hồ sơ tiếp nhận"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "BD Lab API",
+    "description": "Giai đoạn 3 - hồ sơ, PDF và bản nháp. Chưa xác nhận hoặc cấp mã.",
+    "version": "0.3",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "SampleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "matrix": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "tests": {
+            "type": "string"
+          },
+          "uncertain": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "matrix",
+          "location",
+          "quantity",
+          "tests"
+        ]
+      },
+      "DraftDataDto": {
+        "type": "object",
+        "properties": {
+          "customer": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          },
+          "collectedAt": {
+            "type": "string",
+            "description": "YYYY-MM-DD hoặc chuỗi trống nếu chưa biết."
+          },
+          "collector": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SampleDto"
+            }
+          }
+        },
+        "required": [
+          "customer",
+          "address",
+          "contact",
+          "collectedAt",
+          "collector",
+          "note",
+          "samples"
+        ]
+      },
+      "SaveDraftDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Version đã đọc; tránh ghi đè khi hai cửa sổ cùng sửa."
+          },
+          "edited": {
+            "$ref": "#/components/schemas/DraftDataDto"
+          }
+        },
+        "required": [
+          "version",
+          "edited"
+        ]
+      }
+    }
+  }
+}
